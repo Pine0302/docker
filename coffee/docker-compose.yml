@@ -1,4 +1,10 @@
 version: '3.0'
+#networks:
+#  backend:
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: 192.168.204.0/24
 
 services:
 
@@ -13,3 +19,31 @@ services:
     volumes:
       - ${MYSQL_DIR}/data:/var/lib/mysql
       - ${MYSQL_DIR}/config:/etc/mysql/conf.d
+
+  mongo:
+   container_name: mongo
+   image: mongo
+   ports:
+     - "27017:27017"
+   environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+   volumes:
+     - ${MONGO_DIR}/data/db/:/data/db/
+     - ${MONGO_DIR}/etc/mongod.conf:/etc/mongod.conf
+     - ${MONGO_DIR}/data/log/:/data/log/
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - 6379:6379
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ${REDIS_DIR}/conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - ${REDIS_DIR}/data/:/data/
+    entrypoint: redis-server /usr/local/etc/redis/redis.conf  
+    #networks:
+    #  backend:
+      #  ipv4_address: 192.168.204.3 
